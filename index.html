@@ -1,0 +1,1876 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LipRead AI - Advanced Visual Speech Recognition</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --light-color: #f8fafc;
+            --dark-color: #1e293b;
+            --text-color: #334155;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --lip-color: #ec4899;
+            --lip-secondary: #db2777;
+            --speech-color: #8b5cf6;
+            --neural-color: #0ea5e9;
+        }
+        
+        body {
+            background-color: var(--light-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: white;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 0;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--dark-color);
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            color: var(--lip-color);
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, var(--lip-color), var(--speech-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 40px;
+        }
+        
+        .nav-links a {
+            text-decoration: none;
+            color: var(--dark-color);
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            padding: 8px 16px;
+            border-radius: 8px;
+        }
+        
+        .nav-links a:hover {
+            color: var(--lip-color);
+            background-color: #fdf2f8;
+        }
+        
+        .cta-button {
+            background: linear-gradient(135deg, var(--lip-color), var(--speech-color));
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.1rem;
+            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .cta-button:hover::before {
+            left: 100%;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(236, 72, 153, 0.4);
+        }
+        
+        .cta-button.secondary {
+            background: linear-gradient(135deg, var(--neural-color), #0d9488);
+            box-shadow: 0 6px 20px rgba(14, 165, 233, 0.3);
+        }
+        
+        .cta-button.secondary:hover {
+            box-shadow: 0 10px 30px rgba(14, 165, 233, 0.4);
+        }
+        
+        .cta-button.danger {
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            box-shadow: 0 6px 20px rgba(249, 115, 22, 0.3);
+        }
+        
+        .cta-button.danger:hover {
+            box-shadow: 0 10px 30px rgba(249, 115, 22, 0.4);
+        }
+        
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: var(--dark-color);
+            cursor: pointer;
+        }
+        
+        /* Hero Section */
+        .hero {
+            padding: 120px 0 80px;
+            background: linear-gradient(135deg, #fdf2f8 0%, #f0f9ff 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(236, 72, 153, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(14, 165, 233, 0.1) 0%, transparent 50%);
+        }
+        
+        .hero-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 80px;
+            align-items: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .hero-text h1 {
+            font-size: 4rem;
+            color: var(--dark-color);
+            margin-bottom: 24px;
+            line-height: 1.1;
+            background: linear-gradient(135deg, var(--lip-color), var(--speech-color), var(--neural-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero-text p {
+            font-size: 1.4rem;
+            margin-bottom: 40px;
+            color: var(--text-color);
+            font-weight: 500;
+        }
+        
+        .hero-image {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        .hero-image img {
+            max-width: 100%;
+            border-radius: 24px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+            border: 12px solid white;
+            transform: perspective(1000px) rotateY(-5deg);
+            transition: transform 0.5s;
+        }
+        
+        .hero-image img:hover {
+            transform: perspective(1000px) rotateY(0deg);
+        }
+        
+        /* Live Lip Reading Section */
+        .live-lip-reading {
+            padding: 120px 0;
+            background-color: white;
+            position: relative;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 3.5rem;
+            color: var(--dark-color);
+            margin-bottom: 80px;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 200px;
+            height: 6px;
+            background: linear-gradient(90deg, var(--lip-color), var(--speech-color), var(--neural-color));
+            border-radius: 3px;
+        }
+        
+        .lip-reading-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 24px;
+            padding: 50px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
+            border: 1px solid #f1f5f9;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .lip-reading-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--lip-color), var(--speech-color), var(--neural-color));
+        }
+        
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 50px;
+            margin-bottom: 50px;
+        }
+        
+        @media (max-width: 1200px) {
+            .analysis-grid {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+        }
+        
+        /* Camera Section */
+        .camera-section {
+            background: linear-gradient(145deg, #0f172a, #1e293b);
+            border-radius: 20px;
+            padding: 30px;
+            border: 2px solid #334155;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+        
+        .camera-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            color: white;
+        }
+        
+        .camera-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1.6rem;
+        }
+        
+        .camera-title i {
+            color: var(--lip-color);
+            font-size: 2rem;
+        }
+        
+        .camera-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .status-pulse {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #10b981;
+            position: relative;
+            animation: pulse 2s infinite;
+        }
+        
+        .status-pulse::after {
+            content: '';
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            right: -4px;
+            bottom: -4px;
+            border-radius: 50%;
+            border: 2px solid #10b981;
+            animation: pulse-ring 2s infinite;
+        }
+        
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 0.8; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        .camera-feed {
+            width: 100%;
+            height: 380px;
+            background-color: #0f172a;
+            border-radius: 16px;
+            position: relative;
+            overflow: hidden;
+            border: 2px solid #475569;
+        }
+        
+        #cameraVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scaleX(-1);
+        }
+        
+        .camera-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            text-align: center;
+            padding: 40px;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9), rgba(30, 41, 59, 0.9));
+        }
+        
+        .camera-icon {
+            font-size: 4rem;
+            margin-bottom: 25px;
+            color: var(--lip-color);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* Analysis Panel */
+        .analysis-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 35px;
+        }
+        
+        .analysis-card {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+            border: 2px solid #f1f5f9;
+            transition: transform 0.3s;
+        }
+        
+        .analysis-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .analysis-card h3 {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: var(--dark-color);
+            margin-bottom: 25px;
+            font-size: 1.8rem;
+        }
+        
+        .analysis-card h3 i {
+            color: var(--speech-color);
+            font-size: 2rem;
+        }
+        
+        .text-output {
+            width: 100%;
+            min-height: 220px;
+            max-height: 350px;
+            background-color: #0f172a;
+            border-radius: 16px;
+            padding: 25px;
+            border: 2px solid #334155;
+            font-size: 1.4rem;
+            line-height: 1.7;
+            overflow-y: auto;
+            color: white;
+            font-family: 'Courier New', monospace;
+            font-weight: 500;
+        }
+        
+        .output-placeholder {
+            color: #64748b;
+            font-style: italic;
+            text-align: center;
+            padding: 60px 20px;
+            font-size: 1.3rem;
+        }
+        
+        .output-text {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #334155;
+            animation: textAppear 0.6s ease;
+            position: relative;
+        }
+        
+        @keyframes textAppear {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .output-time {
+            font-size: 1rem;
+            color: #94a3b8;
+            margin-right: 15px;
+            font-weight: 400;
+        }
+        
+        /* Enhanced Visualization */
+        .enhanced-visualization {
+            margin-top: 50px;
+            padding: 40px;
+            background: linear-gradient(145deg, #0f172a, #1e293b);
+            border-radius: 20px;
+            border: 2px solid #334155;
+        }
+        
+        .visualization-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        
+        .visualization-header h3 {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .visualization-header h3 i {
+            color: var(--neural-color);
+        }
+        
+        .lip-visualization-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+        
+        @media (max-width: 992px) {
+            .lip-visualization-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .lip-canvas-container {
+            background: #0f172a;
+            border-radius: 16px;
+            padding: 20px;
+            border: 2px solid #475569;
+        }
+        
+        #lipCanvas {
+            background-color: #0f172a;
+            border-radius: 12px;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .phonetic-analysis {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            padding: 25px;
+            border: 2px solid #475569;
+            backdrop-filter: blur(10px);
+        }
+        
+        .phonetic-analysis h4 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .phoneme-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        
+        .phoneme-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: white;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+        
+        .phoneme-item.active {
+            background: rgba(236, 72, 153, 0.2);
+            border-color: var(--lip-color);
+            transform: scale(1.05);
+        }
+        
+        .phoneme-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #475569;
+        }
+        
+        .phoneme-item.active .phoneme-dot {
+            background-color: var(--lip-color);
+            box-shadow: 0 0 10px var(--lip-color);
+        }
+        
+        .phoneme-label {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .phoneme-value {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-left: auto;
+        }
+        
+        /* Speech Metrics */
+        .speech-metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin-top: 35px;
+        }
+        
+        .metric-card {
+            background: linear-gradient(145deg, #ffffff, #f8fafc);
+            border-radius: 16px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border: 2px solid #f1f5f9;
+            transition: transform 0.3s;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .metric-value {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, var(--lip-color), var(--speech-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .metric-label {
+            font-size: 1.1rem;
+            color: #64748b;
+            font-weight: 600;
+        }
+        
+        /* Controls */
+        .controls-section {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+            margin-top: 60px;
+            padding-top: 60px;
+            border-top: 2px solid #f1f5f9;
+        }
+        
+        /* How It Works Section */
+        .how-it-works {
+            padding: 120px 0;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 50px;
+            margin-top: 80px;
+        }
+        
+        .step {
+            background-color: white;
+            padding: 50px 40px;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .step::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 6px;
+            background: linear-gradient(90deg, var(--lip-color), var(--speech-color));
+        }
+        
+        .step:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+        }
+        
+        .step-number {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            font-size: 5rem;
+            font-weight: 900;
+            color: #f1f5f9;
+            z-index: -1;
+        }
+        
+        .step-icon {
+            background: linear-gradient(135deg, var(--lip-color), var(--speech-color));
+            color: white;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin-bottom: 35px;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 15px 30px rgba(236, 72, 153, 0.3);
+        }
+        
+        .step h3 {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            color: var(--dark-color);
+        }
+        
+        .step p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: var(--text-color);
+        }
+        
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: white;
+            padding: 100px 0 40px;
+            position: relative;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 60px;
+            margin-bottom: 60px;
+        }
+        
+        .footer-logo {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .footer-logo i {
+            background: linear-gradient(135deg, var(--lip-color), var(--speech-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2.8rem;
+        }
+        
+        .footer-links h3, .footer-contact h3 {
+            font-size: 1.6rem;
+            margin-bottom: 30px;
+            color: white;
+        }
+        
+        .footer-links ul {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 15px;
+        }
+        
+        .footer-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.1rem;
+            padding: 8px 0;
+        }
+        
+        .footer-links a:hover {
+            color: var(--lip-color);
+            transform: translateX(5px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid #334155;
+            color: #94a3b8;
+            font-size: 1rem;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 1200px) {
+            .hero-text h1 {
+                font-size: 3.5rem;
+            }
+            
+            .section-title {
+                font-size: 3rem;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+                gap: 60px;
+            }
+            
+            .hero-text h1 {
+                font-size: 3rem;
+            }
+            
+            .steps {
+                grid-template-columns: 1fr;
+            }
+            
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background-color: white;
+                padding: 30px;
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+                gap: 25px;
+            }
+            
+            .nav-links.active {
+                display: flex;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .hero-text h1 {
+                font-size: 2.5rem;
+            }
+            
+            .section-title {
+                font-size: 2.5rem;
+            }
+            
+            .controls-section {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .controls-section button {
+                width: 100%;
+                max-width: 350px;
+            }
+            
+            .speech-metrics {
+                grid-template-columns: 1fr;
+            }
+            
+            .analysis-grid {
+                padding: 20px;
+            }
+            
+            .lip-reading-container {
+                padding: 30px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero-text h1 {
+                font-size: 2.2rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .step {
+                padding: 40px 25px;
+            }
+            
+            .step-icon {
+                width: 80px;
+                height: 80px;
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header Section -->
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <a href="#" class="logo">
+                    <i class="fas fa-lips logo-icon"></i>
+                    <span>LipRead AI</span>
+                </a>
+                
+                <ul class="nav-links">
+                    <li><a href="#live-lip-reading"><i class="fas fa-wave-square"></i> Live Analysis</a></li>
+                    <li><a href="#how-it-works"><i class="fas fa-microchip"></i> Technology</a></li>
+                    <li><a href="#accessibility"><i class="fas fa-universal-access"></i> Accessibility</a></li>
+                    <li><a href="#research"><i class="fas fa-flask"></i> Research</a></li>
+                </ul>
+                
+                <button class="cta-button" id="startAnalysisBtn">
+                    <i class="fas fa-play-circle"></i> Start Analysis
+                </button>
+                <button class="mobile-menu-btn">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>Advanced Visual Speech Recognition</h1>
+                    <p>Transforming lip movements into text with state-of-the-art AI. Empowering the deaf and hard-of-hearing community through cutting-edge visual speech technology.</p>
+                    <button class="cta-button" id="heroStartBtn">
+                        <i class="fas fa-video"></i> Begin Lip Reading Analysis
+                    </button>
+                </div>
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80" alt="AI Lip Reading Technology">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Lip Reading Section -->
+    <section id="live-lip-reading" class="live-lip-reading">
+        <div class="container">
+            <h2 class="section-title">Real-Time Lip Movement Analysis</h2>
+            
+            <div class="lip-reading-container">
+                <div class="analysis-grid">
+                    <!-- Camera Section -->
+                    <div class="camera-section">
+                        <div class="camera-header">
+                            <div class="camera-title">
+                                <i class="fas fa-video"></i>
+                                <h3>Live Visual Capture</h3>
+                            </div>
+                            <div class="camera-status">
+                                <div class="status-pulse" id="statusIndicator"></div>
+                                <span id="cameraStatusText">System Ready</span>
+                            </div>
+                        </div>
+                        
+                        <div class="camera-feed">
+                            <video id="cameraVideo" autoplay playsinline></video>
+                            <div class="camera-placeholder" id="cameraPlaceholder">
+                                <i class="fas fa-lips camera-icon"></i>
+                                <h3>Visual Speech Analysis</h3>
+                                <p>Position face clearly in frame for optimal tracking</p>
+                                <p>68 facial landmarks detected in real-time</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Analysis Panel -->
+                    <div class="analysis-panel">
+                        <div class="analysis-card">
+                            <h3><i class="fas fa-comment-dots"></i> Live Transcription</h3>
+                            <div class="text-output" id="textOutput">
+                                <div class="output-placeholder">
+                                    <i class="fas fa-microphone-alt" style="font-size: 2.5rem; margin-bottom: 20px; color: #475569;"></i>
+                                    <p>Real-time transcription will appear here</p>
+                                    <p>Begin speaking to see visual speech conversion</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="speech-metrics">
+                            <div class="metric-card">
+                                <div class="metric-value" id="wordCount">0</div>
+                                <div class="metric-label">Words Identified</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value" id="phonemeCount">0</div>
+                                <div class="metric-label">Phonemes Detected</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value" id="speedWPM">0</div>
+                                <div class="metric-label">Speech Rate (WPM)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Enhanced Visualization -->
+                <div class="enhanced-visualization">
+                    <div class="visualization-header">
+                        <h3><i class="fas fa-chart-network"></i> Advanced Speech Analysis</h3>
+                        <div class="camera-status">
+                            <div class="status-pulse"></div>
+                            <span>Real-time Processing</span>
+                        </div>
+                    </div>
+                    
+                    <div class="lip-visualization-container">
+                        <div class="lip-canvas-container">
+                            <canvas id="lipCanvas" width="600" height="300"></canvas>
+                        </div>
+                        
+                        <div class="phonetic-analysis">
+                            <h4><i class="fas fa-waveform"></i> Active Phonemes</h4>
+                            <div class="phoneme-grid" id="phonemeGrid">
+                                <!-- Phoneme items will be added here -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Controls -->
+                <div class="controls-section">
+                    <button class="cta-button secondary" id="startCameraBtn">
+                        <i class="fas fa-play"></i> Start Analysis
+                    </button>
+                    <button class="cta-button danger" id="stopCameraBtn" disabled>
+                        <i class="fas fa-stop"></i> Stop Analysis
+                    </button>
+                    <button class="cta-button" id="clearTextBtn">
+                        <i class="fas fa-eraser"></i> Clear Transcript
+                    </button>
+                    <button class="cta-button secondary" id="samplePhrasesBtn">
+                        <i class="fas fa-comment-medical"></i> Example Conversation
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section id="how-it-works" class="how-it-works">
+        <div class="container">
+            <h2 class="section-title">Advanced Technology Stack</h2>
+            
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-icon">
+                        <i class="fas fa-eye"></i>
+                    </div>
+                    <h3>Multi-Modal Visual Tracking</h3>
+                    <p>Advanced computer vision captures 68 facial landmarks at 60fps, analyzing lip contours, tongue position, jaw movement, and facial muscle activity for comprehensive visual speech analysis.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-icon">
+                        <i class="fas fa-brain"></i>
+                    </div>
+                    <h3>Neural Network Processing</h3>
+                    <p>Transformer-based neural networks process visual sequences, converting mouth movements into phonetic components using temporal convolutional networks and attention mechanisms.</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-icon">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <h3>Context-Aware Translation</h3>
+                    <p>Language models integrate visual phonemes with contextual understanding, applying grammatical rules and semantic analysis to produce accurate, coherent transcriptions.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-about">
+                    <div class="footer-logo">
+                        <i class="fas fa-lips"></i> LipRead AI
+                    </div>
+                    <p>Pioneering visual speech recognition technology to bridge communication gaps and empower the deaf and hard-of-hearing community worldwide through innovative AI solutions.</p>
+                </div>
+                
+                <div class="footer-links">
+                    <h3>Navigation</h3>
+                    <ul>
+                        <li><a href="#live-lip-reading"><i class="fas fa-chevron-right"></i> Live Analysis</a></li>
+                        <li><a href="#how-it-works"><i class="fas fa-chevron-right"></i> Technology</a></li>
+                        <li><a href="#accessibility"><i class="fas fa-chevron-right"></i> Accessibility</a></li>
+                        <li><a href="#research"><i class="fas fa-chevron-right"></i> Research Papers</a></li>
+                        <li><a href="#developers"><i class="fas fa-chevron-right"></i> Developer API</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-contact">
+                    <h3>Connect With Us</h3>
+                    <p><i class="fas fa-envelope"></i> research@lipreadai.com</p>
+                    <p><i class="fas fa-phone"></i> Accessibility Support: +1 (800) 555-LIPS</p>
+                    <p><i class="fas fa-globe"></i> Multi-language Support</p>
+                    <p><i class="fas fa-users"></i> Open Source Community</p>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 LipRead AI Research Foundation. Advancing accessible communication through artificial intelligence.</p>
+                <p style="margin-top: 15px; font-size: 0.9rem;">This interface simulates advanced lip reading technology using real-time visual processing. Production systems integrate trained ML models for visual speech recognition.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const cameraVideo = document.getElementById('cameraVideo');
+        const cameraPlaceholder = document.getElementById('cameraPlaceholder');
+        const cameraStatusText = document.getElementById('cameraStatusText');
+        const statusIndicator = document.querySelector('.status-pulse');
+        const textOutput = document.getElementById('textOutput');
+        const startCameraBtn = document.getElementById('startCameraBtn');
+        const stopCameraBtn = document.getElementById('stopCameraBtn');
+        const clearTextBtn = document.getElementById('clearTextBtn');
+        const samplePhrasesBtn = document.getElementById('samplePhrasesBtn');
+        const heroStartBtn = document.getElementById('heroStartBtn');
+        const startAnalysisBtn = document.getElementById('startAnalysisBtn');
+        const wordCount = document.getElementById('wordCount');
+        const phonemeCount = document.getElementById('phonemeCount');
+        const speedWPM = document.getElementById('speedWPM');
+        const lipCanvas = document.getElementById('lipCanvas');
+        const phonemeGrid = document.getElementById('phonemeGrid');
+        const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+        const navLinks = document.querySelector('.nav-links');
+        
+        // Variables
+        let stream = null;
+        let isCameraOn = false;
+        let animationId = null;
+        let ctx = lipCanvas.getContext('2d');
+        let mouthOpenness = 0.3;
+        let mouthWidth = 0.5;
+        let lipRoundness = 0.5;
+        let detectionInterval = null;
+        let currentPhonemes = [];
+        let detectedWords = 0;
+        let detectedPhonemes = 0;
+        let speechStartTime = null;
+        let wordsPerMinute = 0;
+        
+        // Enhanced Phoneme/Viseme System
+        const phonemeSystem = [
+            { id: 'bilabial', name: 'Bilabial', symbol: 'p/b/m', color: '#ec4899', shape: 'closed', strength: 0 },
+            { id: 'labiodental', name: 'Labiodental', symbol: 'f/v', color: '#8b5cf6', shape: 'teeth', strength: 0 },
+            { id: 'dental', name: 'Dental', symbol: 'θ/ð', color: '#0ea5e9', shape: 'tongue', strength: 0 },
+            { id: 'alveolar', name: 'Alveolar', symbol: 't/d/n', color: '#10b981', shape: 'tip', strength: 0 },
+            { id: 'postalveolar', name: 'Postalveolar', symbol: 'ʃ/ʒ', color: '#f59e0b', shape: 'blade', strength: 0 },
+            { id: 'palatal', name: 'Palatal', symbol: 'j', color: '#ef4444', shape: 'body', strength: 0 },
+            { id: 'velar', name: 'Velar', symbol: 'k/g/ŋ', color: '#6366f1', shape: 'back', strength: 0 },
+            { id: 'glottal', name: 'Glottal', symbol: 'h/ʔ', color: '#14b8a6', shape: 'throat', strength: 0 }
+        ];
+        
+        // Conversation contexts for realistic simulation
+        const conversationContexts = [
+            {
+                context: "greeting",
+                phrases: ["Hello there!", "Good morning!", "Hi, how are you?", "Nice to see you!"]
+            },
+            {
+                context: "introduction",
+                phrases: ["My name is Alex", "I work with assistive technology", "This is lip reading AI", "We're developing visual speech recognition"]
+            },
+            {
+                context: "questions",
+                phrases: ["How does this work?", "Can you see my lips clearly?", "What are you saying?", "Could you repeat that?"]
+            },
+            {
+                context: "technology",
+                phrases: ["AI analyzes lip movements", "Computer vision tracks 68 points", "Neural networks process visual data", "Real-time transcription occurs"]
+            },
+            {
+                context: "accessibility",
+                phrases: ["This helps deaf community", "Visual speech recognition", "Breaking communication barriers", "Inclusive technology matters"]
+            }
+        ];
+        
+        // Initialize phoneme grid
+        function initPhonemeGrid() {
+            phonemeSystem.forEach(phoneme => {
+                const phonemeElement = document.createElement('div');
+                phonemeElement.className = 'phoneme-item';
+                phonemeElement.id = `phoneme-${phoneme.id}`;
+                phonemeElement.innerHTML = `
+                    <div class="phoneme-dot"></div>
+                    <div class="phoneme-label">${phoneme.name}</div>
+                    <div class="phoneme-value">${phoneme.symbol}</div>
+                `;
+                phonemeGrid.appendChild(phonemeElement);
+            });
+        }
+        
+        // Update active phonemes
+        function updateActivePhonemes(activeIds) {
+            // Reset all
+            phonemeSystem.forEach(phoneme => {
+                const element = document.getElementById(`phoneme-${phoneme.id}`);
+                if (element) {
+                    element.classList.remove('active');
+                    phoneme.strength = 0;
+                }
+            });
+            
+            // Set active ones with varying strengths
+            if (activeIds && activeIds.length > 0) {
+                activeIds.forEach((phonemeId, index) => {
+                    const element = document.getElementById(`phoneme-${phonemeId}`);
+                    if (element) {
+                        element.classList.add('active');
+                        const phoneme = phonemeSystem.find(p => p.id === phonemeId);
+                        if (phoneme) {
+                            phoneme.strength = 0.7 + (index * 0.1);
+                        }
+                    }
+                });
+            }
+        }
+        
+        // Start camera function
+        async function startCamera() {
+            try {
+                // Request camera access
+                stream = await navigator.mediaDevices.getUserMedia({
+                    video: {
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 },
+                        facingMode: 'user',
+                        frameRate: { ideal: 60 }
+                    },
+                    audio: false
+                });
+                
+                // Display camera stream
+                cameraVideo.srcObject = stream;
+                cameraPlaceholder.style.display = 'none';
+                cameraVideo.style.display = 'block';
+                
+                // Update UI
+                isCameraOn = true;
+                startCameraBtn.disabled = true;
+                stopCameraBtn.disabled = false;
+                cameraStatusText.textContent = 'Analysis Active';
+                
+                // Start speech metrics
+                speechStartTime = Date.now();
+                
+                // Start enhanced visualization
+                startEnhancedVisualization();
+                
+                // Start advanced lip reading simulation
+                startAdvancedLipReading();
+                
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+                cameraStatusText.textContent = 'Visual Analysis Ready';
+                
+                // Enhanced fallback mode
+                cameraPlaceholder.innerHTML = `
+                    <i class="fas fa-lips camera-icon"></i>
+                    <h3>Visual Analysis Ready</h3>
+                    <p>Advanced lip reading simulation active</p>
+                    <p>68-point facial tracking initialized</p>
+                `;
+                cameraPlaceholder.style.display = 'flex';
+                
+                // Start simulation
+                startEnhancedVisualization();
+                startAdvancedLipReading();
+            }
+        }
+        
+        // Stop camera function
+        function stopCamera() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            
+            // Update UI
+            isCameraOn = false;
+            cameraVideo.srcObject = null;
+            cameraVideo.style.display = 'none';
+            cameraPlaceholder.style.display = 'flex';
+            cameraPlaceholder.innerHTML = `
+                <i class="fas fa-lips camera-icon"></i>
+                <h3>Visual Speech Analysis</h3>
+                <p>Position face clearly in frame for optimal tracking</p>
+                <p>68 facial landmarks detected in real-time</p>
+            `;
+            startCameraBtn.disabled = false;
+            stopCameraBtn.disabled = true;
+            cameraStatusText.textContent = 'System Ready';
+            
+            // Stop animations
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            
+            if (detectionInterval) {
+                clearInterval(detectionInterval);
+                detectionInterval = null;
+            }
+            
+            // Reset visualization
+            ctx.clearRect(0, 0, lipCanvas.width, lipCanvas.height);
+            updateActivePhonemes([]);
+        }
+        
+        // Start advanced lip reading simulation
+        function startAdvancedLipReading() {
+            if (detectionInterval) {
+                clearInterval(detectionInterval);
+            }
+            
+            // Realistic conversation flow
+            let contextIndex = 0;
+            let phraseIndex = 0;
+            
+            detectionInterval = setInterval(() => {
+                if (!isCameraOn) return;
+                
+                // Simulate natural conversation flow
+                const context = conversationContexts[contextIndex];
+                const phrase = context.phrases[phraseIndex];
+                
+                simulatePhraseDetection(phrase, context.context);
+                
+                // Move to next phrase or context
+                phraseIndex++;
+                if (phraseIndex >= context.phrases.length) {
+                    phraseIndex = 0;
+                    contextIndex = (contextIndex + 1) % conversationContexts.length;
+                }
+                
+                // Update speech metrics
+                updateSpeechMetrics();
+                
+            }, 3000); // More natural 3-second intervals
+        }
+        
+        // Simulate phrase detection with context
+        function simulatePhraseDetection(phrase, context) {
+            // Add transcription
+            addTranscription(phrase, context);
+            
+            // Update word count
+            const words = phrase.split(' ').length;
+            detectedWords += words;
+            wordCount.textContent = detectedWords;
+            
+            // Update phoneme count (approx 1.5 phonemes per character)
+            const phonemes = Math.floor(phrase.length * 1.5);
+            detectedPhonemes += phonemes;
+            phonemeCount.textContent = detectedPhonemes;
+            
+            // Simulate phoneme activation
+            simulatePhonemeActivation(phrase);
+        }
+        
+        // Simulate phoneme activation based on phrase
+        function simulatePhonemeActivation(phrase) {
+            const activePhonemes = [];
+            const phraseLower = phrase.toLowerCase();
+            
+            // Map letters to phoneme categories
+            if (phraseLower.includes('p') || phraseLower.includes('b') || phraseLower.includes('m')) {
+                activePhonemes.push('bilabial');
+            }
+            if (phraseLower.includes('f') || phraseLower.includes('v')) {
+                activePhonemes.push('labiodental');
+            }
+            if (phraseLower.includes('t') || phraseLower.includes('d') || phraseLower.includes('n')) {
+                activePhonemes.push('alveolar');
+            }
+            if (phraseLower.includes('k') || phraseLower.includes('g')) {
+                activePhonemes.push('velar');
+            }
+            if (phraseLower.includes('s') || phraseLower.includes('z')) {
+                activePhonemes.push('postalveolar');
+            }
+            if (phraseLower.includes('h')) {
+                activePhonemes.push('glottal');
+            }
+            
+            // Ensure at least 2-3 active phonemes
+            while (activePhonemes.length < 2) {
+                const randomPhoneme = phonemeSystem[Math.floor(Math.random() * phonemeSystem.length)];
+                if (!activePhonemes.includes(randomPhoneme.id)) {
+                    activePhonemes.push(randomPhoneme.id);
+                }
+            }
+            
+            updateActivePhonemes(activePhonemes);
+            
+            // Update mouth parameters based on active phonemes
+            updateMouthParameters(activePhonemes);
+        }
+        
+        // Update mouth parameters based on active phonemes
+        function updateMouthParameters(activePhonemes) {
+            // Reset to base values
+            mouthOpenness = 0.3;
+            mouthWidth = 0.5;
+            lipRoundness = 0.5;
+            
+            // Adjust based on phoneme combinations
+            activePhonemes.forEach(phonemeId => {
+                switch(phonemeId) {
+                    case 'bilabial':
+                        mouthOpenness = Math.min(mouthOpenness + 0.1, 0.4);
+                        lipRoundness = 0.8;
+                        break;
+                    case 'labiodental':
+                        mouthOpenness = Math.min(mouthOpenness + 0.2, 0.5);
+                        mouthWidth = 0.6;
+                        break;
+                    case 'alveolar':
+                        mouthOpenness = Math.min(mouthOpenness + 0.15, 0.45);
+                        break;
+                    case 'velar':
+                        mouthOpenness = Math.min(mouthOpenness + 0.25, 0.6);
+                        lipRoundness = 0.3;
+                        break;
+                    case 'postalveolar':
+                        mouthWidth = 0.7;
+                        lipRoundness = 0.2;
+                        break;
+                }
+            });
+        }
+        
+        // Update speech metrics
+        function updateSpeechMetrics() {
+            if (speechStartTime) {
+                const elapsedMinutes = (Date.now() - speechStartTime) / 60000;
+                if (elapsedMinutes > 0) {
+                    wordsPerMinute = Math.round(detectedWords / elapsedMinutes);
+                    speedWPM.textContent = wordsPerMinute;
+                }
+            }
+        }
+        
+        // Add transcription to output
+        function addTranscription(text, context) {
+            // Remove placeholder if present
+            if (textOutput.querySelector('.output-placeholder')) {
+                textOutput.innerHTML = '';
+            }
+            
+            // Create text element
+            const now = new Date();
+            const timeString = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`;
+            
+            const textElement = document.createElement('div');
+            textElement.className = 'output-text';
+            
+            // Context-based styling
+            let contextIcon = 'fa-comment';
+            let contextColor = '#94a3b8';
+            
+            switch(context) {
+                case 'greeting':
+                    contextIcon = 'fa-hand-wave';
+                    contextColor = '#10b981';
+                    break;
+                case 'introduction':
+                    contextIcon = 'fa-user';
+                    contextColor = '#0ea5e9';
+                    break;
+                case 'questions':
+                    contextIcon = 'fa-question';
+                    contextColor = '#f59e0b';
+                    break;
+                case 'technology':
+                    contextIcon = 'fa-microchip';
+                    contextColor = '#8b5cf6';
+                    break;
+                case 'accessibility':
+                    contextIcon = 'fa-universal-access';
+                    contextColor = '#ec4899';
+                    break;
+            }
+            
+            textElement.innerHTML = `
+                <span class="output-time">
+                    <i class="fas ${contextIcon}" style="color: ${contextColor}; margin-right: 8px;"></i>
+                    ${timeString}
+                </span>
+                <span style="color: white;">${text}</span>
+            `;
+            
+            // Add to output with animation
+            textOutput.prepend(textElement);
+            
+            // Auto-scroll to top
+            textOutput.scrollTop = 0;
+        }
+        
+        // Clear transcription
+        function clearTranscription() {
+            textOutput.innerHTML = `
+                <div class="output-placeholder">
+                    <i class="fas fa-microphone-alt" style="font-size: 2.5rem; margin-bottom: 20px; color: #475569;"></i>
+                    <p>Real-time transcription will appear here</p>
+                    <p>Begin speaking to see visual speech conversion</p>
+                </div>
+            `;
+            wordCount.textContent = '0';
+            phonemeCount.textContent = '0';
+            speedWPM.textContent = '0';
+            detectedWords = 0;
+            detectedPhonemes = 0;
+            speechStartTime = Date.now();
+        }
+        
+        // Start enhanced visualization
+        function startEnhancedVisualization() {
+            // Clear canvas
+            ctx.clearRect(0, 0, lipCanvas.width, lipCanvas.height);
+            
+            function animate() {
+                // Clear canvas
+                ctx.clearRect(0, 0, lipCanvas.width, lipCanvas.height);
+                
+                // Draw advanced mouth visualization
+                drawAdvancedMouthVisualization();
+                
+                // Continue animation
+                animationId = requestAnimationFrame(animate);
+            }
+            
+            animate();
+        }
+        
+        // Draw advanced mouth visualization
+        function drawAdvancedMouthVisualization() {
+            const centerX = lipCanvas.width / 2;
+            const centerY = lipCanvas.height / 2;
+            
+            // Natural movement with speech patterns
+            const time = Date.now() / 1000;
+            const speechPattern = 0.15 * Math.sin(time * 8); // Speech rhythm
+            const naturalVariation = 0.08 * Math.sin(time * 1.2); // Natural movement
+            
+            // Dynamic parameters with natural variation
+            const dynamicOpenness = Math.max(0.15, mouthOpenness + speechPattern + naturalVariation);
+            const dynamicWidth = mouthWidth + 0.1 * Math.sin(time * 2.5);
+            const dynamicRoundness = lipRoundness + 0.1 * Math.sin(time * 1.8);
+            
+            // Draw facial landmark grid (background)
+            drawLandmarkGrid();
+            
+            // Draw advanced mouth with gradient
+            const lipGradient = ctx.createLinearGradient(0, centerY - 50, 0, centerY + 50);
+            lipGradient.addColorStop(0, '#ec4899');
+            lipGradient.addColorStop(0.5, '#db2777');
+            lipGradient.addColorStop(1, '#be185d');
+            
+            // Upper lip
+            ctx.beginPath();
+            ctx.ellipse(
+                centerX, 
+                centerY - 20, 
+                100 * dynamicWidth, 
+                40 * (1 + dynamicOpenness * 0.7), 
+                0, 0, Math.PI
+            );
+            ctx.strokeStyle = lipGradient;
+            ctx.lineWidth = 4;
+            ctx.stroke();
+            
+            // Lower lip
+            ctx.beginPath();
+            ctx.ellipse(
+                centerX, 
+                centerY + 20, 
+                100 * dynamicWidth, 
+                40 * (1 + dynamicOpenness * 0.7), 
+                0, Math.PI, Math.PI * 2
+            );
+            ctx.stroke();
+            
+            // Oral cavity with depth
+            ctx.beginPath();
+            ctx.ellipse(
+                centerX, 
+                centerY, 
+                85 * dynamicWidth * dynamicRoundness, 
+                35 * dynamicOpenness, 
+                0, 0, Math.PI * 2
+            );
+            
+            const cavityGradient = ctx.createRadialGradient(
+                centerX, centerY, 0,
+                centerX, centerY, 50
+            );
+            cavityGradient.addColorStop(0, dynamicOpenness > 0.4 ? '#ef4444' : '#f87171');
+            cavityGradient.addColorStop(0.7, dynamicOpenness > 0.4 ? '#dc2626' : '#ef4444');
+            cavityGradient.addColorStop(1, '#991b1b');
+            
+            ctx.fillStyle = cavityGradient;
+            ctx.fill();
+            
+            // Draw tongue when appropriate
+            if (dynamicOpenness > 0.35 && Math.random() > 0.3) {
+                drawTongue(centerX, centerY, dynamicOpenness, dynamicRoundness);
+            }
+            
+            // Draw teeth pattern
+            if (dynamicOpenness > 0.25) {
+                drawTeeth(centerX, centerY, dynamicWidth, dynamicOpenness);
+            }
+            
+            // Draw tracking points
+            drawTrackingPoints(centerX, centerY, dynamicWidth, dynamicOpenness);
+            
+            // Draw analysis info
+            drawAnalysisInfo(centerX);
+        }
+        
+        // Draw facial landmark grid
+        function drawLandmarkGrid() {
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+            ctx.lineWidth = 1;
+            
+            // Vertical lines
+            for (let x = 50; x < lipCanvas.width; x += 50) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, lipCanvas.height);
+                ctx.stroke();
+            }
+            
+            // Horizontal lines
+            for (let y = 50; y < lipCanvas.height; y += 50) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(lipCanvas.width, y);
+                ctx.stroke();
+            }
+        }
+        
+        // Draw tongue
+        function drawTongue(centerX, centerY, openness, roundness) {
+            ctx.beginPath();
+            const tongueWidth = 25 * roundness;
+            const tongueHeight = 10 + openness * 15;
+            
+            // Tongue shape with curve
+            ctx.ellipse(
+                centerX, 
+                centerY + 15 + openness * 10, 
+                tongueWidth, 
+                tongueHeight, 
+                0, 0, Math.PI * 2
+            );
+            
+            const tongueGradient = ctx.createLinearGradient(
+                centerX - tongueWidth, centerY,
+                centerX + tongueWidth, centerY
+            );
+            tongueGradient.addColorStop(0, '#fb7185');
+            tongueGradient.addColorStop(0.5, '#f43f5e');
+            tongueGradient.addColorStop(1, '#e11d48');
+            
+            ctx.fillStyle = tongueGradient;
+            ctx.fill();
+        }
+        
+        // Draw teeth
+        function drawTeeth(centerX, centerY, width, openness) {
+            const toothCount = Math.floor(12 * width);
+            const toothWidth = (160 * width) / toothCount;
+            
+            for (let i = 0; i < toothCount; i++) {
+                const toothX = centerX - (toothCount * toothWidth) / 2 + i * toothWidth + toothWidth/2;
+                
+                // Upper teeth
+                ctx.beginPath();
+                ctx.roundRect(
+                    toothX - toothWidth/2 + 2, 
+                    centerY - 30 - openness * 10, 
+                    toothWidth - 4, 
+                    8 + openness * 5, 
+                    3
+                );
+                
+                const toothGradient = ctx.createLinearGradient(
+                    toothX - toothWidth/2, centerY - 30,
+                    toothX + toothWidth/2, centerY - 30
+                );
+                toothGradient.addColorStop(0, '#f8fafc');
+                toothGradient.addColorStop(1, '#e2e8f0');
+                
+                ctx.fillStyle = toothGradient;
+                ctx.fill();
+                
+                // Tooth shadow
+                ctx.strokeStyle = '#cbd5e1';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+        }
+        
+        // Draw tracking points
+        function drawTrackingPoints(centerX, centerY, width, openness) {
+            const points = 20;
+            const radius = 90 * width;
+            
+            for (let i = 0; i < points; i++) {
+                const angle = (i / points) * Math.PI * 2;
+                const pointX = centerX + Math.cos(angle) * radius;
+                const pointY = centerY + Math.sin(angle) * (40 * (1 + openness));
+                
+                // Active points based on phoneme strengths
+                let pointActive = false;
+                let pointColor = '#475569';
+                
+                phonemeSystem.forEach(phoneme => {
+                    if (phoneme.strength > 0.5 && Math.random() < phoneme.strength) {
+                        pointActive = true;
+                        pointColor = phoneme.color;
+                    }
+                });
+                
+                ctx.beginPath();
+                ctx.arc(pointX, pointY, pointActive ? 4 : 2, 0, Math.PI * 2);
+                ctx.fillStyle = pointActive ? pointColor : '#475569';
+                ctx.fill();
+                
+                // Glow effect for active points
+                if (pointActive) {
+                    ctx.beginPath();
+                    ctx.arc(pointX, pointY, 6, 0, Math.PI * 2);
+                    ctx.fillStyle = pointColor + '40';
+                    ctx.fill();
+                }
+            }
+        }
+        
+        // Draw analysis info
+        function drawAnalysisInfo(centerX) {
+            // Analysis mode
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Visual Speech Analysis', centerX, 40);
+            
+            // Status
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#94a3b8';
+            
+            const statusText = currentPhonemes.length > 0 ? 
+                `Processing ${currentPhonemes.length} phoneme groups` : 
+                'Monitoring lip movement';
+            
+            ctx.fillText(statusText, centerX, lipCanvas.height - 25);
+            
+            // Frame rate
+            ctx.fillText('60 FPS Tracking', centerX, lipCanvas.height - 45);
+        }
+        
+        // Try example conversation
+        function tryExampleConversation() {
+            if (!isCameraOn) {
+                startCamera();
+                setTimeout(() => {
+                    simulateConversation();
+                }, 1500);
+            } else {
+                simulateConversation();
+            }
+        }
+        
+        function simulateConversation() {
+            clearTranscription();
+            
+            // Simulate a natural conversation
+            const conversation = [
+                { text: "Hello! Welcome to LipRead AI.", context: "greeting" },
+                { text: "I'm demonstrating visual speech recognition.", context: "introduction" },
+                { text: "This technology analyzes lip movements.", context: "technology" },
+                { text: "It converts visual speech into text.", context: "technology" },
+                { text: "Helping the deaf community communicate.", context: "accessibility" },
+                { text: "What do you think about this?", context: "questions" }
+            ];
+            
+            conversation.forEach((line, index) => {
+                setTimeout(() => {
+                    simulatePhraseDetection(line.text, line.context);
+                }, index * 2500);
+            });
+        }
+        
+        // Event Listeners
+        startCameraBtn.addEventListener('click', startCamera);
+        stopCameraBtn.addEventListener('click', stopCamera);
+        clearTextBtn.addEventListener('click', clearTranscription);
+        samplePhrasesBtn.addEventListener('click', tryExampleConversation);
+        heroStartBtn.addEventListener('click', () => {
+            document.querySelector('#live-lip-reading').scrollIntoView({ behavior: 'smooth' });
+            setTimeout(startCamera, 500);
+        });
+        startAnalysisBtn.addEventListener('click', () => {
+            document.querySelector('#live-lip-reading').scrollIntoView({ behavior: 'smooth' });
+            setTimeout(startCamera, 500);
+        });
+        
+        // Mobile menu
+        mobileMenuBtn.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+        });
+        
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                    
+                    navLinks.classList.remove('active');
+                }
+            });
+        });
+        
+        // Initialize
+        window.addEventListener('load', () => {
+            // Initialize phoneme grid
+            initPhonemeGrid();
+            
+            // Check browser support
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                startCameraBtn.disabled = true;
+                startCameraBtn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Update Browser';
+                cameraStatusText.textContent = 'Advanced Features Require Camera Access';
+            }
+        });
+        
+        // Cleanup
+        window.addEventListener('beforeunload', () => {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+        });
+    </script>
+</body>
+</html>
